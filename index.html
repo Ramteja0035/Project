@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Draggable Text Editor</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+    }
+
+    .container {
+        position: relative;
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .button-bar {
+        margin-bottom: 10px;
+    }
+
+    .button-bar button {
+        margin-right: 10px;
+        padding: 8px 15px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .button-bar button:hover {
+        background-color: #0056b3;
+    }
+
+    .draggable-box {
+        position: absolute;
+        width: 200px;
+        height: 150px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        font-size: 16px;
+        cursor: move;
+        resize: both;
+        overflow: auto;
+    }
+
+    .font-size-options {
+        position: absolute;
+        top: 40px;
+        left: 250px;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        padding: 5px;
+        border-radius: 3px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .font-size-options ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .font-size-options li {
+        cursor: pointer;
+        margin-bottom: 5px;
+        padding: 5px;
+    }
+
+    .font-size-options li:hover {
+        background-color: #f0f0f0;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="button-bar">
+        <button onclick="undo()">Undo</button>
+        <button onclick="redo()">Redo</button>
+        <button onclick="toggleFontSizeOptions()">Change Text Size</button>
+        <button onclick="addTextBox()">Add Text</button>
+    </div>
+</div>
+
+<script>
+    let undoStack = [];
+    let redoStack = [];
+    let draggable = false;
+    let offsetX, offsetY;
+    let fontSizes = [12, 16, 20, 24, 28, 32, 36]; // Predefined font sizes
+    let fontSizeOptionsVisible = false;
+
+    function addTextBox() {
+        let editor = document.createElement('div');
+        editor.classList.add('draggable-box');
+        editor.contentEditable = "true";
+        editor.style.left = '50px'; // Initial position
+        editor.style.top = '50px';  // Initial position
+        document.body.appendChild(editor);
+
+        editor.addEventListener('input', function() {
+            undoStack.push(this.innerHTML);
+            redoStack = [];
+        });
+
+        editor.addEventListener('mousedown', function(event) {
+            draggable = true;
+            offsetX = event.clientX - parseInt(window.getComputedStyle(this).left);
+            offsetY = event.clientY - parseInt(window.getComputedStyle(this).top);
+        });
+
+        document.addEventListener('mousemove', function(event) {
+            if (draggable && event.target.classList.contains('draggable-box')) {
+                let editor = event.target;
+                editor.style.left = (event.clientX - offsetX) + 'px';
+                editor.style.top = (event.clientY - offsetY) + 'px';
+            }
+        });
+
+        document.addEventListener('mouseup', function() {
+            draggable = false;
+        });
+
+        // Resize functionality
+        editor.addEventListener('mousedown', function(event) {
+            if (event.target.classList.contains('draggable-box')) {
+                let startX = event.clientX;
+                let startY = event.clientY;
+                let startWidth = parseInt(window.getComputedStyle(editor).width);
+                let startHeight = parseInt(window.getComputedStyle(editor).height);
+
+                document.addEventListener('mousemove', doResize, false);
+                document.addEventListener('mouseup', stopResize, false);
+
+                function doResize(event) {
+                    editor.style.width = (startWidth + event.clientX - startX) + 'px';
+                    editor.style.height = (startHeight + event.clientY - startY) + 'px';
+                }
+
+                function stopResize() {
+                    document.removeEventListener('mousemove', doResize, false);
+                    document.removeEventListener('mouseup', stopResize, false);
+                }
+            }
+        });
+    }
+
+    function toggleFontSizeOptions() {
+        if (fontSizeOptionsVisible) {
+            hideFontSizeOptions();
+        } else {
+            showFontSizeOptions();
+        }
+    }
+
+    function showFontSizeOptions() {
+        let fontSizeOptions = document.createElement('div');
+        fontSizeOptions.classList.add('font-size-options');
+        
+        let sizeList = document.createElement('ul');
+        for (let size of fontSizes) {
+            let listItem = document.createElement('li');
+            listItem.textContent = size;
+            listItem.onclick = function() {
+                changeTextSize(size);
+                hideFontSizeOptions();
+            };
+            sizeList.appendChild(listItem);
+        }
+        fontSizeOptions.appendChild(sizeList);
+        document.body.appendChild(fontSizeOptions);
+        fontSizeOptionsVisible = true;
+    }
+
+    function hideFontSizeOptions() {
+        let fontSizeOptions = document.querySelector('.font-size-options');
+        if (fontSizeOptions) {
+            fontSizeOptions.remove();
+            fontSizeOptionsVisible = false;
+        }
+    }
+
+    function changeTextSize(size) {
+        let editor = document.querySelector('.draggable-box');
+        if (editor) {
+            editor.style.fontSize = size + 'px';
+        }
+    }
+
+    function undo() {
+        if (undoStack.length > 0) {
+            let currentState = undoStack.pop();
+            redoStack.push(document.querySelector('.draggable-box').innerHTML);
+            document.querySelector('.draggable-box').innerHTML = currentState;
+        }
+    }
+
+    function redo() {
+        if (redoStack.length > 0) {
+            let nextState = redoStack.pop();
+            undoStack.push(document.querySelector('.draggable-box').innerHTML);
+            document.querySelector('.draggable-box').innerHTML = nextState;
+        }
+    }
+</script>
+</body>
+</html>
