@@ -57,7 +57,7 @@
 
     .font-size-options {
         position: absolute;
-        top: calc(100% + 10px); /* Display below the button */
+        top: calc(100% + 10px);
         left: 0;
         background-color: #fff;
         border: 1px solid #ccc;
@@ -81,6 +81,19 @@
     .font-size-options li:hover {
         background-color: #f0f0f0;
     }
+    .custom-box {
+    width: 500px;
+    height: 500px;
+    background-color: white;
+    border: 2px solid #000;
+    margin: 20px auto;
+    padding: 20px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+	}
+
 </style>
 </head>
 <body>
@@ -88,25 +101,25 @@
     <div class="button-bar">
         <button onclick="undo()">Undo</button>
         <button onclick="redo()">Redo</button>
-        <button onclick="toggleFontSizeOptions()">Change Text Size</button>
         <button onclick="addTextBox()">Add Text</button>
+        <button onclick="toggleFontSizeOptions()">Change Text Size</button>
     </div>
 </div>
-
+<div class="custom-box">Enter the text in this Box..</div>
 <script>
     let undoStack = [];
     let redoStack = [];
     let draggable = false;
     let offsetX, offsetY;
-    let fontSizes = [12, 16, 20, 24, 28, 32, 36]; // Predefined font sizes
+    let fontSizes = [12, 16, 20, 24, 28, 32, 36];
     let fontSizeOptionsVisible = false;
 
     function addTextBox() {
         let editor = document.createElement('div');
         editor.classList.add('draggable-box');
         editor.contentEditable = "true";
-        editor.style.left = '50px'; // Initial position
-        editor.style.top = '50px';  // Initial position
+        editor.style.left = '50px';
+        editor.style.top = '50px';
         document.body.appendChild(editor);
 
         editor.addEventListener('input', function() {
@@ -131,8 +144,6 @@
         document.addEventListener('mouseup', function() {
             draggable = false;
         });
-
-        // Resize functionality
         editor.addEventListener('mousedown', function(event) {
             if (event.target.classList.contains('draggable-box')) {
                 let startX = event.clientX;
@@ -179,7 +190,7 @@
             sizeList.appendChild(listItem);
         }
         fontSizeOptions.appendChild(sizeList);
-        document.querySelector('.button-bar').appendChild(fontSizeOptions); // Append to the button bar
+        document.querySelector('.button-bar').appendChild(fontSizeOptions);
         fontSizeOptionsVisible = true;
     }
 
