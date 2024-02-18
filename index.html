@@ -14,7 +14,7 @@
 
     .container {
         position: relative;
-        max-width: 600px;
+        max-width: 450px;
         margin: 50px auto;
         padding: 20px;
         background-color: #fff;
@@ -45,8 +45,8 @@
 
     .draggable-box {
         position: absolute;
-        width: 200px;
-        height: 150px;
+        width: 100px;
+        height: 100px;
         border: 1px solid #ccc;
         padding: 10px;
         font-size: 16px;
@@ -57,8 +57,8 @@
 
     .font-size-options {
         position: absolute;
-        top: 40px;
-        left: 250px;
+        top: calc(100% + 10px); /* Display below the button */
+        left: 0;
         background-color: #fff;
         border: 1px solid #ccc;
         padding: 5px;
@@ -179,7 +179,7 @@
             sizeList.appendChild(listItem);
         }
         fontSizeOptions.appendChild(sizeList);
-        document.body.appendChild(fontSizeOptions);
+        document.querySelector('.button-bar').appendChild(fontSizeOptions); // Append to the button bar
         fontSizeOptionsVisible = true;
     }
 
