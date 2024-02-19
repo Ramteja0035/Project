@@ -10,11 +10,12 @@
         margin: 0;
         padding: 0;
         background-color: #f4f4f4;
+        position: relative; /* Add position relative to body */
     }
 
     .container {
         position: relative;
-        max-width: 450px;
+        max-width: 1000px;
         margin: 50px auto;
         padding: 20px;
         background-color: #fff;
@@ -81,19 +82,91 @@
     .font-size-options li:hover {
         background-color: #f0f0f0;
     }
-    .custom-box {
-    width: 500px;
-    height: 500px;
-    background-color: white;
-    border: 2px solid #000;
-    margin: 20px auto;
-    padding: 20px;
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-	}
 
+    .font-family-options {
+        position: absolute;
+        top: calc(100% + 10px);
+        left: 0;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        padding: 5px;
+        border-radius: 3px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .font-family-options ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .font-family-options li {
+        cursor: pointer;
+        margin-bottom: 5px;
+        padding: 5px;
+    }
+
+    .font-family-options li:hover {
+        background-color: #f0f0f0;
+    }
+
+    .color-options {
+        position: absolute;
+        top: calc(100% + 10px);
+        left: 0;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        padding: 5px;
+        border-radius: 3px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .color-options ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .color-options li {
+        cursor: pointer;
+        margin-bottom: 5px;
+        padding: 5px;
+    }
+
+    .color-options li:hover {
+        background-color: #f0f0f0;
+    }
+
+    .custom-box {
+        width: 500px;
+        height: 500px;
+        background-color: white;
+        border: 2px solid #000;
+        margin: 20px auto;
+        padding: 20px;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .add-text-button {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .add-text-button:hover {
+        background-color: #0056b3;
+    }
 </style>
 </head>
 <body>
@@ -101,11 +174,16 @@
     <div class="button-bar">
         <button onclick="undo()">Undo</button>
         <button onclick="redo()">Redo</button>
-        <button onclick="addTextBox()">Add Text</button>
         <button onclick="toggleFontSizeOptions()">Change Text Size</button>
+        <button onclick="toggleFontFamilyOptions()">Change Text Font</button> <!-- New button for changing font -->
+        <button onclick="toggleColorOptions()">Change Text Color</button> <!-- New button for changing color -->
     </div>
 </div>
 <div class="custom-box">Enter the text in this Box..</div>
+<br>
+<br>
+<br>
+<button class="add-text-button" onclick="addTextBox()">Add Text</button> <!-- Button placed outside of .container -->
 <script>
     let undoStack = [];
     let redoStack = [];
@@ -113,6 +191,10 @@
     let offsetX, offsetY;
     let fontSizes = [12, 16, 20, 24, 28, 32, 36];
     let fontSizeOptionsVisible = false;
+    let fontFamilies = ['Arial', 'Times New Roman', 'Courier New', 'Verdana', 'Georgia', 'Tahoma'];
+    let fontFamilyOptionsVisible = false; // Initialize the variable for font family options
+    let colorOptionsVisible = false; // Initialize the variable for color options
+    let colors = ['#000000', '#ff0000', '#00ff00', '#0000ff', '#ffff00', '#00ffff', '#ff00ff']; // Color options
 
     function addTextBox() {
         let editor = document.createElement('div');
@@ -178,7 +260,7 @@
     function showFontSizeOptions() {
         let fontSizeOptions = document.createElement('div');
         fontSizeOptions.classList.add('font-size-options');
-        
+
         let sizeList = document.createElement('ul');
         for (let size of fontSizes) {
             let listItem = document.createElement('li');
@@ -206,6 +288,90 @@
         let editor = document.querySelector('.draggable-box');
         if (editor) {
             editor.style.fontSize = size + 'px';
+        }
+    }
+
+    function toggleFontFamilyOptions() {
+        if (fontFamilyOptionsVisible) {
+            hideFontFamilyOptions();
+        } else {
+            showFontFamilyOptions();
+        }
+    }
+
+    function showFontFamilyOptions() {
+        let fontFamilyOptions = document.createElement('div');
+        fontFamilyOptions.classList.add('font-family-options');
+
+        let familyList = document.createElement('ul');
+        for (let fontFamily of fontFamilies) {
+            let listItem = document.createElement('li');
+            listItem.textContent = fontFamily;
+            listItem.onclick = function() {
+                changeTextFont(fontFamily);
+                hideFontFamilyOptions();
+            };
+            familyList.appendChild(listItem);
+        }
+        fontFamilyOptions.appendChild(familyList);
+        document.querySelector('.button-bar').appendChild(fontFamilyOptions);
+        fontFamilyOptionsVisible = true;
+    }
+
+    function hideFontFamilyOptions() {
+        let fontFamilyOptions = document.querySelector('.font-family-options');
+        if (fontFamilyOptions) {
+            fontFamilyOptions.remove();
+            fontFamilyOptionsVisible = false;
+        }
+    }
+
+    function changeTextFont(fontFamily) {
+        let editor = document.querySelector('.draggable-box');
+        if (editor) {
+            editor.style.fontFamily = fontFamily;
+        }
+    }
+
+    function toggleColorOptions() {
+        if (colorOptionsVisible) {
+            hideColorOptions();
+        } else {
+            showColorOptions();
+        }
+    }
+
+    function showColorOptions() {
+        let colorOptions = document.createElement('div');
+        colorOptions.classList.add('color-options');
+
+        let colorList = document.createElement('ul');
+        for (let color of colors) {
+            let listItem = document.createElement('li');
+            listItem.style.backgroundColor = color;
+            listItem.onclick = function() {
+                changeTextColor(color);
+                hideColorOptions();
+            };
+            colorList.appendChild(listItem);
+        }
+        colorOptions.appendChild(colorList);
+        document.querySelector('.button-bar').appendChild(colorOptions);
+        colorOptionsVisible = true;
+    }
+
+    function hideColorOptions() {
+        let colorOptions = document.querySelector('.color-options');
+        if (colorOptions) {
+            colorOptions.remove();
+            colorOptionsVisible = false;
+        }
+    }
+
+    function changeTextColor(color) {
+        let editor = document.querySelector('.draggable-box');
+        if (editor) {
+            editor.style.color = color;
         }
     }
 
