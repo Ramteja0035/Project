@@ -10,7 +10,7 @@
         margin: 0;
         padding: 0;
         background-color: #f4f4f4;
-        position: relative; /* Add position relative to body */
+        position: relative;
     }
 
     .container {
@@ -175,15 +175,15 @@
         <button onclick="undo()">Undo</button>
         <button onclick="redo()">Redo</button>
         <button onclick="toggleFontSizeOptions()">Change Text Size</button>
-        <button onclick="toggleFontFamilyOptions()">Change Text Font</button> <!-- New button for changing font -->
-        <button onclick="toggleColorOptions()">Change Text Color</button> <!-- New button for changing color -->
+        <button onclick="toggleFontFamilyOptions()">Change Text Font</button>
+        <button onclick="toggleColorOptions()">Change Text Color</button>
     </div>
 </div>
 <div class="custom-box">Enter the text in this Box..</div>
 <br>
 <br>
 <br>
-<button class="add-text-button" onclick="addTextBox()">Add Text</button> <!-- Button placed outside of .container -->
+<button class="add-text-button" onclick="addTextBox()">Add Text</button>
 <script>
     let undoStack = [];
     let redoStack = [];
@@ -192,9 +192,9 @@
     let fontSizes = [12, 16, 20, 24, 28, 32, 36];
     let fontSizeOptionsVisible = false;
     let fontFamilies = ['Arial', 'Times New Roman', 'Courier New', 'Verdana', 'Georgia', 'Tahoma'];
-    let fontFamilyOptionsVisible = false; // Initialize the variable for font family options
-    let colorOptionsVisible = false; // Initialize the variable for color options
-    let colors = ['#000000', '#ff0000', '#00ff00', '#0000ff', '#ffff00', '#00ffff', '#ff00ff']; // Color options
+    let fontFamilyOptionsVisible = false;
+    let colorOptionsVisible = false;
+    let colors = ['#000000', '#ff0000', '#00ff00', '#0000ff', '#ffff00', '#00ffff', '#ff00ff'];
 
     function addTextBox() {
         let editor = document.createElement('div');
